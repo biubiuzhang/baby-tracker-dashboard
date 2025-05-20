@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Flask env
+instance/
+.env
+*.env
+
+# Virtualenv
+venv/
+ENV/
+env/
+.venv/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs synced from ESP32 (you keep them on disk but not in git)
+baby-logs/
+logs/
