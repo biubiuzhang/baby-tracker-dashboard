@@ -1,5 +1,6 @@
 from flask import Flask
 from .models import db
+from .api import api
 
 def create_app():
     app = Flask(__name__)
@@ -13,5 +14,7 @@ def create_app():
 
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    app.register_blueprint(api)
 
     return app

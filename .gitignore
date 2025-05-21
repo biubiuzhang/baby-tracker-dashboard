@@ -1,14 +1,12 @@
 # Python
+*.pyc
 __pycache__/
-*.py[cod]
-*.pyo
 *.pyd
 *.log
 
 # Flask env
 instance/
 .env
-*.env
 
 # Virtualenv
 venv/
@@ -16,13 +14,23 @@ ENV/
 env/
 .venv/
 
-# VS Code settings
+# VS Code
 .vscode/
+*.code-workspace
 
-# OS files
+# OS/system files
 .DS_Store
 Thumbs.db
+*.db
+*.swp
 
-# Logs synced from ESP32 (you keep them on disk but not in git)
+# Logs synced from ESP32
 baby-logs/
 logs/
+*.txt
+
+# React frontend
+frontend/node_modules/
+frontend/.DS_Store
+build/
+.env
