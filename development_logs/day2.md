@@ -40,7 +40,7 @@
   * Calls: `http://192.168.50.144/log?file=log-YYYY-MM-DD.txt`
   * Parses the log lines (`YYYY-MM-DD HH:MM:SS Color`)
   * Any missing entries in the DB are inserted
-#### 🔁 Fallback Logic
+#### Fallback Logic
 * If ESP32 is unreachable:
   * Falls back to reading from local `baby-logs/` (synced earlier by `systemctl`)
 ### 3. **Log Management with `systemd`**
@@ -77,11 +77,11 @@
 ## Example Screenshot Pairing
 To accompany:
 * Flask `/api/logs/today` output in browser or curl
-![API GET](./images/api_get_today.png)
+* ![API GET](./images/api_get_today.png)
 * Flask interface (once it replaces buttons)
-![web home page](./images/flask_home_page.png)
+* ![web home page](./images/flask_home_page.png)
 * ESP32 HTTP home page showing the log collected from the device
-![ESP32 home page](./images/esp_home_page.png)
+* ![ESP32 home page](./images/esp_home_page.png)
 ## 🔜 Day 3 Roadmap
 
 * [ ] Replace button UI with React component
