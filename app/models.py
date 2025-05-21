@@ -5,5 +5,5 @@ db = SQLAlchemy()
 
 class LogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    color = db.Column(db.String(20), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    color = db.Column(db.String, nullable=False)

@@ -83,7 +83,6 @@ To accompany:
 * ESP32 HTTP home page showing the log collected from the device
 * ![ESP32 home page](./images/esp_home_page.png)
 ## 🔜 Day 3 Roadmap
-
 * [ ] Replace button UI with React component
 * [ ] Pull `/api/logs/today` from frontend and display activity stats
 * [ ] Add visual timeline or table
