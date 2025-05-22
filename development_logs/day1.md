@@ -103,8 +103,7 @@ sudo systemctl start sync-esp32-log
 | ESP32 not listing logs on `/` | Updated firmware to list via `SPIFFS.openNextFile()`  |
 | VS Code can't write to folder | Fixed with `sudo chown -R pi:pi ~/repo`               |
 ## ✅ Next Steps (Planned for Day 2)
-* 📊 Add bar chart for daily stats
-* 📅 Add dropdown for date navigation
-* 🧼 Add log rotation / auto-delete old logs on ESP32
-* 🔒 Secure web logging (basic auth or passphrase)
-* 🧪 Add duplicate filtering or debounce logic
+* Add bar chart for daily stats
+* ~~Add dropdown for date navigation~~
+* ~~Add log rotation / auto-delete old logs on ESP32~~
+* Add duplicate filtering or debounce logic

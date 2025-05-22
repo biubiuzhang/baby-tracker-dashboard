@@ -71,6 +71,6 @@ Currently:
 * ✅ Web UI fetches and displays real counts
 * ✅ Tailwind styling looks good
 ## Next Steps (Day 4)
-* Fix React button `onClick()` to call `postLogEntry(color)`
-* Ensure web button logs go to Flask → PostgreSQL
-* Add calendar or per-day history view (log export)
+* ~~Fix React button `onClick()` to call `postLogEntry(color)`~~
+* ~~Ensure web button logs go to Flask → PostgreSQL~~
+* ~~Add calendar or per-day history view (log export)~~
