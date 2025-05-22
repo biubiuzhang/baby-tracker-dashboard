@@ -91,8 +91,6 @@ def esp_status():
 curl http://192.168.50.144/
 ```
 
----
-
 ### Frontend
 
 #### `api.js`
@@ -120,4 +118,4 @@ export const checkESPStatus = () =>
 * ✅ All core features remain functional and clean
 * ✅ Codebase simplified, modernized, and easier to maintain
 ---
-* ![home page](./images/home_oage_day_4.png)
+* ![home page](./images/home_page_day_4.png)
