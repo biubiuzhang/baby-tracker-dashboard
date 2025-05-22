@@ -11,3 +11,6 @@ export const postLogEntry = (color) =>
 export const checkESPStatus = () =>
   axios.get(`${BACKEND}/api/esp-status`).then(res => res.data.online);
 
+export const fetchLogsByDate = (date) =>
+  axios.get(`${BACKEND}/api/logs/export/${date}`).then(res => res.data);
+

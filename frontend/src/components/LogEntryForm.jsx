@@ -1,29 +1,34 @@
 import React from 'react';
 import { postLogEntry } from '../api';
 
-const ACTIVITY_BUTTONS = [
-  { label: 'Bath', color: 'Black' },
-  { label: 'Diaper Change', color: 'Red' },
-  { label: 'Feeding', color: 'Blue' },
-  { label: 'Pee', color: 'Green' },
-  { label: 'Poo', color: 'Yellow' }
+const BUTTONS = [
+  { color: 'Black', label: 'Bath', className: 'btn-dark' },
+  { color: 'Red', label: 'Diaper Change', className: 'btn-danger' },
+  { color: 'Blue', label: 'Feeding', className: 'btn-primary' },
+  { color: 'Green', label: 'Pee', className: 'btn-success' },
+  { color: 'Yellow', label: 'Poo', className: 'btn-warning text-dark' }
 ];
 
 export default function LogEntryForm({ onLogAdded }) {
   const handleClick = async (color) => {
-    await postLogEntry(color); // ✅ Uses your prebuilt axios wrapper
-    onLogAdded();
+    try {
+      await postLogEntry(color);
+      onLogAdded();
+    } catch (err) {
+      console.error('Failed to submit log:', err);
+    }
   };
 
   return (
     <>
-      {ACTIVITY_BUTTONS.map(({ label, color }) => (
+      {BUTTONS.map(({ color, label, className }) => (
         <button
           key={color}
-          className="btn btn-outline-primary fw-semibold"
           onClick={() => handleClick(color)}
+          className={`btn ${className}`}
+          style={{ minWidth: '140px' }}
         >
-          {label} ({color})
+          {label}
         </button>
       ))}
     </>

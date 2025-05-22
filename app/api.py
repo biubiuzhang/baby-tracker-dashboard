@@ -80,16 +80,16 @@ def add_log():
     return jsonify({"message": "Entry saved", "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")})
 
 
-@api.route("/api/logs/export/<date_str>", methods=["GET"])
-def export_txt_log(date_str):
-    log_file = LOG_DIR / f"log-{date_str}.txt"
-    if not log_file.exists():
-        return jsonify({"error": "Log file not found."}), 404
+# @api.route("/api/logs/export/<date_str>", methods=["GET"])
+# def export_txt_log(date_str):
+#     log_file = LOG_DIR / f"log-{date_str}.txt"
+#     if not log_file.exists():
+#         return jsonify({"error": "Log file not found."}), 404
 
-    with open(log_file) as f:
-        lines = f.readlines()
+#     with open(log_file) as f:
+#         lines = f.readlines()
 
-    return jsonify({"date": date_str, "entries": [line.strip() for line in lines]})
+#     return jsonify({"date": date_str, "entries": [line.strip() for line in lines]})
 
 @api.route('/api/esp-status', methods=['GET'])
 def esp_status():
@@ -100,3 +100,30 @@ def esp_status():
     except Exception as e:
         print(f"[ESP CHECK] Failed: {e}")
     return jsonify({"online": False})
+
+@api.route("/api/logs/export/<date>", methods=["GET"])
+def export_logs_from_db(date):
+    try:
+        day = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=CHINA_TZ)
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
+
+    start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    logs = LogEntry.query.filter(
+        LogEntry.timestamp >= start,
+        LogEntry.timestamp <= end
+    ).order_by(LogEntry.timestamp.asc()).all()
+
+    entries = []
+    for log in logs:
+        entries.append({
+            "time": log.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "activity": ACTIVITY_MAP.get(log.color, "Power-on" if "[Boot]" in log.color else log.color)
+        })
+
+    return jsonify({
+        "date": date,
+        "entries": entries
+    })
