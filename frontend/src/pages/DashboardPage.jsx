@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const loadLogs = async () => {
     try {
       const data = await fetchTodayLogs();
-      console.log('Fetched logs:', data); // ✅ Debug log
+      console.log('Fetched logs:', data);
       setLogs(data);
     } catch (err) {
       console.error('Error loading logs:', err);
@@ -24,14 +24,19 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-light min-vh-100 d-flex flex-column">
       <Navbar />
-      <main className="max-w-3xl mx-auto p-4">
-        <LogEntryForm onLogAdded={loadLogs} />
+      <main className="container py-5">
+        <div className="mb-4 d-flex flex-wrap justify-content-center gap-2">
+          <LogEntryForm onLogAdded={loadLogs} />
+        </div>
+
         {error ? (
-          <div className="text-red-500 font-semibold my-4">{error}</div>
+          <div className="alert alert-danger text-center">{error}</div>
         ) : (
-          <LogTable logs={logs} />
+          <div className="table-responsive">
+            <LogTable logs={logs} />
+          </div>
         )}
       </main>
     </div>

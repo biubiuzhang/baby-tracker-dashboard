@@ -2,10 +2,12 @@ from flask import Blueprint, request, jsonify
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from .models import db, LogEntry
+import requests
 
 api = Blueprint('api', __name__)
 LOG_DIR = Path.home() / "baby-logs"
 CHINA_TZ = timezone(timedelta(hours=8))
+ESP32_URL = "http://192.168.50.144"  # or the IP address of your ESP32
 
 ACTIVITY_MAP = {
     "Blue": "Feeding",
@@ -88,3 +90,13 @@ def export_txt_log(date_str):
         lines = f.readlines()
 
     return jsonify({"date": date_str, "entries": [line.strip() for line in lines]})
+
+@api.route('/api/esp-status', methods=['GET'])
+def esp_status():
+    try:
+        resp = requests.get(f"{ESP32_URL}/", timeout=2)
+        if resp.status_code == 200:
+            return jsonify({"online": True})
+    except Exception as e:
+        print(f"[ESP CHECK] Failed: {e}")
+    return jsonify({"online": False})

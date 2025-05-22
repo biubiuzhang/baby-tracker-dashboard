@@ -1,23 +1,31 @@
 import React from 'react';
 import { postLogEntry } from '../api';
 
+const ACTIVITY_BUTTONS = [
+  { label: 'Bath', color: 'Black' },
+  { label: 'Diaper Change', color: 'Red' },
+  { label: 'Feeding', color: 'Blue' },
+  { label: 'Pee', color: 'Green' },
+  { label: 'Poo', color: 'Yellow' }
+];
+
 export default function LogEntryForm({ onLogAdded }) {
-  const handleClick = async (type) => {
-    await postLogEntry(type);
+  const handleClick = async (color) => {
+    await postLogEntry(color); // ✅ Uses your prebuilt axios wrapper
     onLogAdded();
   };
 
   return (
-    <div className="flex justify-center my-6 gap-4">
-      {['Feed', 'Diaper', 'Sleep'].map((type) => (
+    <>
+      {ACTIVITY_BUTTONS.map(({ label, color }) => (
         <button
-          key={type}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-          onClick={() => handleClick(type)}
+          key={color}
+          className="btn btn-outline-primary fw-semibold"
+          onClick={() => handleClick(color)}
         >
-          {type}
+          {label} ({color})
         </button>
       ))}
-    </div>
+    </>
   );
 }

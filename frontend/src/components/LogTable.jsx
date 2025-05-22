@@ -6,19 +6,19 @@ export default function LogTable({ logs }) {
   const entries = Object.entries(logs.counts || {});
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border px-4 py-2">Category</th>
-            <th className="border px-4 py-2">Count</th>
+    <div className="table-responsive">
+      <table className="table table-bordered table-hover text-center align-middle">
+        <thead className="table-light">
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Count</th>
           </tr>
         </thead>
         <tbody>
           {entries.map(([type, count]) => (
-            <tr key={type} className="text-center">
-              <td className="border px-4 py-2">{type}</td>
-              <td className="border px-4 py-2">{count}</td>
+            <tr key={type}>
+              <td>{type}</td>
+              <td>{count}</td>
             </tr>
           ))}
         </tbody>
