@@ -1,4 +1,4 @@
-# Day 5 -- Historical Data Logs
+# Day 5 - Historical Data Logs
 
 ## Summary
 

@@ -1,6 +1,6 @@
-## Day 4 – UI Migration to Bootstrap & ESP32 Status Integration
+# Day 4 – UI Migration to Bootstrap & ESP32 Status Integration
 
-### Summary
+## Summary
 
 Today's work focused on removing TailwindCSS, fully migrating to Bootstrap 5, and implementing a real-time ESP32 status monitor in both the backend and frontend. Significant UI polish was applied to all components to ensure a responsive, readable, and consistent user experience.
 
