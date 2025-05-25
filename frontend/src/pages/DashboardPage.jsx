@@ -8,9 +8,12 @@ import { fetchTodayLogs, fetchLogsByDate } from '../api';
 
 export default function DashboardPage() {
   const [todayLogs, setTodayLogs] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const now = new Date();
+    // Add 8 hours offset manually (milliseconds)
+    const chinaTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    return chinaTime.toISOString().slice(0, 10);
+  });
   const [previousLogs, setPreviousLogs] = useState([]);
   const [error, setError] = useState(null);
 
@@ -48,29 +51,40 @@ export default function DashboardPage() {
 
   // MQTT subscription for real-time log updates
   useEffect(() => {
-    const client = mqtt.connect('ws://rpi.local:9001'); // Adjust if needed
-
+    const client = mqtt.connect('ws://rpi.local:9001'); // or your broker address
+  
     client.on('connect', () => {
       client.subscribe('esp32/babytracker/logs');
+      console.log("[MQTT] Connected ✅");
+      console.log("[MQTT] Subscribed to topic 🔁");
     });
-
+  
     client.on('message', (topic, message) => {
       try {
         const { timestamp, color } = JSON.parse(message.toString());
-        const logDate = timestamp.slice(0, 10);
-        const today = new Date().toISOString().slice(0, 10);
-    
-        if (logDate === today) {
-          loadTodayLogs(); // this fetches /api/logs/today and gives updated counts
-          loadPreviousLogs(today); // this fetches /api/logs/export/${logDate} and gives the full log entries
+        const logDate = timestamp.slice(0, 10);  // This is from ESP32 (China TZ)
+  
+        // ✅ Force browser to use GMT+8 (China time)
+        const nowCN = new Date().toLocaleString('en-CA', {
+          timeZone: 'Asia/Shanghai'
+        }).slice(0, 10); // Format: YYYY-MM-DD
+  
+        console.log(`[MQTT] ESP Date: ${logDate}, Browser CN Date: ${nowCN}`);
+  
+        if (logDate === nowCN) {
+          console.log("[MQTT] Message is for today (CN), reloading...");
+          loadTodayLogs();
+          loadPreviousLogs(nowCN);
+        } else {
+          console.log("[MQTT] Message is not for today, ignoring.");
         }
       } catch (err) {
-        console.error('Failed to parse MQTT message:', err);
+        console.error('[MQTT] Failed to parse MQTT message:', err);
       }
     });
-
+  
     return () => client.end();
-  }, []);
+  }, []);  
 
   console.log("Logs going to LogTable:", todayLogs);
 

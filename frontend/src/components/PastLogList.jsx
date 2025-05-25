@@ -1,11 +1,12 @@
 import React from 'react';
 
 const ACTIVITY_ICONS = {
-  Feeding: '🍼',
-  'Diaper Change': '🧷',
+  Feed: '🍼',
+  Stop: '⏹️',
   Pee: '💧',
   Poo: '💩',
-  Bath: '🛁',
+  Sleep: '😴',
+  'Diaper-1': '🧷',
   'Power-on': '⚡'
 };
 

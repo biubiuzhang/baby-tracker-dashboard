@@ -11,11 +11,11 @@ CHINA_TZ = timezone(timedelta(hours=8))
 ESP32_URL = "http://esp32.local"  # or the IP address of your ESP32
 
 ACTIVITY_MAP = {
-    "Blue": "Feeding",
-    "Red": "Diaper Change",
-    "Green": "Pee",
-    "Yellow": "Poo",
-    "Black": "Bath"
+    "Green": "Feed",
+    "Blue": "Sleep",
+    "Black": "Stop",
+    "Red": "Poo",
+    "Yellow": "Pee"
 }
 
 @api.route("/api/logs/today", methods=["GET"])
