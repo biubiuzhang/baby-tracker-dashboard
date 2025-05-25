@@ -8,7 +8,7 @@ import requests
 api = Blueprint('api', __name__)
 LOG_DIR = Path.home() / "baby-logs"
 CHINA_TZ = timezone(timedelta(hours=8))
-ESP32_URL = "http://192.168.50.144"  # or the IP address of your ESP32
+ESP32_URL = "http://esp32.local"  # or the IP address of your ESP32
 
 ACTIVITY_MAP = {
     "Blue": "Feeding",
