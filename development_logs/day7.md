@@ -17,15 +17,6 @@ This session involved **major upgrades across firmware, backend, and frontend**,
 
 ## Backend (Flask) Changes
 
-* ✅ **Database schema extended** with `diaper` column in `LogEntry` model:
-
-  ```python
-  diaper = db.Column(db.Integer, default=0)
-  ```
-* ✅ Updated `sync_txt_to_db.py`:
-
-  * Inferred `diaper += 1` for Pee/Poo
-  * Inferred `diaper -= 1` for "Diaper-1" message
 * ✅ Updated `/api/logs/today` and `/api/logs/export/<date>` endpoints to reflect changes
 * ✅ Confirmed all timestamps are parsed/stored in **UTC+8 (Asia/Shanghai)** timezone
 * 🧪 Encountered issue with schema mismatch — attempted Flask-Migrate setup but later dropped/recreated DB manually
@@ -42,8 +33,10 @@ This session involved **major upgrades across firmware, backend, and frontend**,
     ```
 * ✅ Fixed `selectedDate` initialization to reflect China-local time
 * ✅ Fixed a bug where today's logs were duplicated in both "Today" and "Past Activities" due to timezone mismatch
-* ✅ Added debug logs to MQTT handlers to verify message timestamps and client-side comparisons
+* ✅ Added chart to show baby formular box's temperature
 * ✅ Clarified code path that triggers reload of logs after new MQTT message is received
+---
+![temperature page](./images/temperature_log.png)
 
 ## Other Work
 
