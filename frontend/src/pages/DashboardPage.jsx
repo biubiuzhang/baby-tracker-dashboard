@@ -62,8 +62,6 @@ export default function DashboardPage() {
         const today = new Date().toISOString().slice(0, 10);
     
         if (logDate === today) {
-          // ❌ DON'T directly push { timestamp, color }
-          // ✅ Instead: re-fetch the full log counts from backend
           loadTodayLogs(); // this fetches /api/logs/today and gives updated counts
           loadPreviousLogs(today); // this fetches /api/logs/export/${logDate} and gives the full log entries
         }
@@ -85,7 +83,7 @@ export default function DashboardPage() {
         <h3 className="text-center mb-4">Today's Activities</h3>
         <div className="mb-4 d-flex flex-wrap justify-content-center gap-2">
           <LogEntryForm onLogAdded={() => {
-            loadTodayLogs;
+            loadTodayLogs();
             loadPreviousLogs(selectedDate);
             }} />
         </div>
