@@ -1,28 +1,28 @@
 import React from 'react';
 
 export default function LogTable({ logs }) {
-  if (!logs || typeof logs !== 'object') return null;
-
-  const entries = Object.entries(logs.counts || {});
-
   return (
-    <div className="table-responsive">
-      <table className="table table-bordered table-hover text-center align-middle">
-        <thead className="table-light">
-          <tr>
-            <th scope="col">Category</th>
-            <th scope="col">Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map(([type, count]) => (
-            <tr key={type}>
-              <td>{type}</td>
+    <table className="table table-bordered text-center">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {logs && logs.length > 0 ? (
+          logs.map(({ activity, count }, index) => (
+            <tr key={`${activity}-${index}`}>
+              <td>{activity}</td>
               <td>{count}</td>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          ))                 
+        ) : (
+          <tr>
+            <td colSpan="2" className="text-muted">No entries found.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
   );
 }

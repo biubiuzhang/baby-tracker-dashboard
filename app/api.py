@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from .models import db, LogEntry
+from .sync_txt_db import sync_txt_to_db
 import requests
 
 api = Blueprint('api', __name__)
@@ -34,7 +35,10 @@ def get_today_logs():
         if activity:
             counts[activity] += 1
 
-    return jsonify({"date": today_start.strftime("%Y-%m-%d"), "counts": counts})
+    return jsonify({
+        "date": today_start.strftime("%Y-%m-%d"),
+        "logs": [{"activity": key, "count": value} for key, value in counts.items()]
+    })
 
 
 @api.route("/api/logs/<date_str>", methods=["GET"])
@@ -76,20 +80,9 @@ def add_log():
 
     db.session.add(LogEntry(timestamp=now, color=color))
     db.session.commit()
+    sync_txt_to_db()
 
     return jsonify({"message": "Entry saved", "timestamp": now.strftime("%Y-%m-%d %H:%M:%S")})
-
-
-# @api.route("/api/logs/export/<date_str>", methods=["GET"])
-# def export_txt_log(date_str):
-#     log_file = LOG_DIR / f"log-{date_str}.txt"
-#     if not log_file.exists():
-#         return jsonify({"error": "Log file not found."}), 404
-
-#     with open(log_file) as f:
-#         lines = f.readlines()
-
-#     return jsonify({"date": date_str, "entries": [line.strip() for line in lines]})
 
 @api.route('/api/esp-status', methods=['GET'])
 def esp_status():

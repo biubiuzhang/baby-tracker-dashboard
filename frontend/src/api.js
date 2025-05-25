@@ -3,7 +3,7 @@ import axios from 'axios';
 const BACKEND = 'http://192.168.50.207:5000';
 
 export const fetchTodayLogs = () =>
-  axios.get(`${BACKEND}/api/logs/today`).then(res => res.data);
+  axios.get(`${BACKEND}/api/logs/today`).then(res => res.data.logs || []);
 
 export const postLogEntry = (color) =>
   axios.post(`${BACKEND}/api/logs`, { color });
