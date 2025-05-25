@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import mqtt from 'mqtt';
-import Navbar from '../components/Navbar';
 import LogEntryForm from '../components/LogEntryForm';
 import LogTable from '../components/LogTable';
 import DateSelector from '../components/DateSelector';
@@ -77,7 +76,6 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-column">
-      <Navbar />
       <main className="container py-5">
         {/* ✅ Section 1: Today's Log */}
         <h3 className="text-center mb-4">Today's Activities</h3>
