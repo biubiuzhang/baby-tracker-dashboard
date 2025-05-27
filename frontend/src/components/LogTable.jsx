@@ -1,34 +1,55 @@
 import React from 'react';
 
-export default function LogTable({ logs }) {
-  const orderedActivities = ['Feed', 'Sleep', 'Stop', 'Poo', 'Pee'];
+const ORDERED_ACTIVITIES = ['feed', 'sleep', 'reserved', 'poo', 'pee', 'pee+poo'];
+const LABELS = {
+  feed: 'Feed',
+  sleep: 'Sleep',
+  reserved: 'Reserved',
+  poo: 'Poo',
+  pee: 'Pee',
+  'pee+poo': 'Pee+Poo'
+};
 
-  const sortedLogs = orderedActivities.map((activity) => {
-    const found = logs.find((log) => log.activity === activity);
-    return found || { activity, count: 0 };
+const ICONS = {
+  feed: '🍼',
+  sleep: '😴',
+  reserved: '⏹️',
+  poo: '💩',
+  pee: '💧',
+  'pee+poo': '🧷'
+};
+
+export default function LogTable({ logs }) {
+  const logMap = {};
+  logs.forEach(({ activity, count }) => {
+    if (activity) {
+      logMap[activity.toLowerCase()] = count;
+    }
   });
+
+  const sortedLogs = ORDERED_ACTIVITIES.map((key) => ({
+    activity: LABELS[key],
+    icon: ICONS[key],
+    count: logMap[key] || 0
+  }));
 
   return (
     <table className="table table-bordered text-center">
       <thead>
         <tr>
-          <th>Category</th>
+          <th>Activity</th>
           <th>Count</th>
         </tr>
       </thead>
       <tbody>
-        {logs && logs.length > 0 ? (
-          sortedLogs.map(({ activity, count }) => (
-            <tr key={activity}>
-              <td>{activity}</td>
-              <td>{count}</td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="2" className="text-muted">No entries found.</td>
+        {sortedLogs.map(({ activity, icon, count }) => (
+          <tr key={activity}>
+            <td>
+              <span style={{ fontSize: '1.2rem' }}>{icon}</span> {activity}
+            </td>
+            <td>{count}</td>
           </tr>
-        )}
+        ))}
       </tbody>
     </table>
   );

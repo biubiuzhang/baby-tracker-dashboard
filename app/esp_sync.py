@@ -2,12 +2,11 @@ import json
 import pytz
 import paho.mqtt.client as mqtt
 from datetime import datetime
-from .models import db, LogEntry
-from .sync_txt_db import sync_txt_to_db
 from flask import Flask
+from .models import db, User, Device, Event, FeedDetail, BootDetail
 
 CHINA_TZ = pytz.timezone("Asia/Shanghai")
-MQTT_BROKER = "localhost"  # or IP of your MQTT broker
+MQTT_BROKER = "localhost"
 
 def on_connect(client, userdata, flags, rc):
     print("[MQTT] Connected with result code", rc)
@@ -16,19 +15,47 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload.decode("utf-8"))
-        ts = datetime.strptime(payload["timestamp"], "%Y-%m-%d %H:%M:%S")
-        ts = CHINA_TZ.localize(ts)
-        color = payload["color"]
+        app = userdata["app"]
 
-        with userdata["app"].app_context():
-            exists = LogEntry.query.filter_by(timestamp=ts, color=color).first()
-            if not exists:
-                db.session.add(LogEntry(timestamp=ts, color=color))
-                db.session.commit()
-                print(f"[MQTT] ✅ Inserted: {ts} - {color}")
-            else:
-                print(f"[MQTT] Skipped duplicate: {ts} - {color}")
-            sync_txt_to_db()
+        with app.app_context():
+            user = User.query.first()
+            device = Device.query.filter_by(user_id=user.id).first()
+
+            # Parse timestamp
+            ts = datetime.strptime(payload["timestamp"], "%Y-%m-%d %H:%M:%S")
+            ts = CHINA_TZ.localize(ts)
+
+            event_type = payload.get("event")
+            action = payload.get("action")
+            volume = payload.get("volume", None)
+            reason = payload.get("reason", None)
+
+            # Check if already inserted
+            exists = Event.query.filter_by(timestamp=ts, event_type=event_type).first()
+            if exists:
+                print(f"[MQTT] Skipped duplicate: {ts} - {event_type}")
+                return
+
+            # Create main event row
+            new_event = Event(
+                user_id=user.id,
+                device_id=device.id,
+                event_type=event_type,
+                action=action,
+                timestamp=ts
+            )
+            db.session.add(new_event)
+            db.session.flush()  # Get event.id before committing
+
+            # Add optional details
+            if event_type == "feed":
+                db.session.add(FeedDetail(event_id=new_event.id, volume_ml=volume or 0))
+            elif event_type == "boot" and reason:
+                db.session.add(BootDetail(event_id=new_event.id, reason=reason))
+
+            db.session.commit()
+            print(f"[MQTT] ✅ Inserted: {ts} - {event_type}")
+
     except Exception as e:
         print(f"[MQTT] ❌ Error: {e}")
 

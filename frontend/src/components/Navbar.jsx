@@ -17,8 +17,8 @@ export default function Navbar() {
     };
 
     fetchStatus();
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
+    const intervalId = setInterval(fetchStatus, 5000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -47,8 +47,8 @@ export default function Navbar() {
       </div>
 
       <span className="ms-auto">
-        <span className={`badge ${online ? 'bg-success' : 'bg-secondary'}`}>
-          ESP32: {online ? 'Online' : 'Offline'}
+        <span className={`badge rounded-pill ${online ? 'bg-success' : 'bg-secondary'}`}>
+          ESP32: {online ? '✅ Online' : '❌ Offline'}
         </span>
       </span>
     </nav>
