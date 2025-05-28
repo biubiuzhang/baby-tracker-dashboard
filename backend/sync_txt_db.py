@@ -49,7 +49,7 @@ def sync_txt_to_db():
                 elif "feed" in event_text.lower():
                     new_event.event_type = "feed"
                     new_event.action = "start" if "start" in event_text else "stop"
-                    new_event.volume_ml = 0  # Unknown from txt
+                    new_event.volume = 0  # Unknown from txt
                 elif "sleep" in event_text.lower():
                     new_event.event_type = "sleep"
                     new_event.action = "start" if "start" in event_text else "stop"
@@ -64,7 +64,7 @@ def sync_txt_to_db():
                 db.session.flush()  # Get new_event.id before committing
 
                 if new_event.event_type == "feed":
-                    db.session.add(FeedDetail(event_id=new_event.id, volume_ml=0))
+                    db.session.add(FeedDetail(event_id=new_event.id, volume=0))
                 elif new_event.event_type == "boot":
                     db.session.add(BootDetail(event_id=new_event.id, reason=reason))
 

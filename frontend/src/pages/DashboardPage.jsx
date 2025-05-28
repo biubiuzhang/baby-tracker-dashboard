@@ -45,7 +45,7 @@ export default function DashboardPage() {
   }, [selectedDate]);
 
   useEffect(() => {
-    const client = mqtt.connect('ws://rpi.local:9001');
+    const client = mqtt.connect(`ws://192.168.50.207:9001`);
 
     client.on('connect', () => {
       client.subscribe('esp32/babytracker/logs');

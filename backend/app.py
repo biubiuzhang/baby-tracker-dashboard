@@ -3,13 +3,13 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from collections import Counter
 import requests
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from .models import db, User, Device, Event, FeedDetail, BootDetail
 
 api = Blueprint("api", __name__)
 CHINA_TZ = timezone(timedelta(hours=8))
-ESP32_URL = "http://esp32.local"  # Update as needed
-
+ESP32_URL = "http://192.168.50.144/"  # Update as needed
 
 # === Utilities ===
 
@@ -18,7 +18,6 @@ def get_today_range():
     start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
     return start, end
-
 
 # === LOG APIs ===
 
@@ -35,11 +34,8 @@ def get_today_logs():
 
     counter = Counter()
     for e in events:
-        # Count always for pee/poo/reserved/pee+poo
         if e.event_type in ["pee", "poo", "reserved", "pee+poo"]:
             counter[e.event_type] += 1
-
-        # Count feed/sleep only if it's a "start" action
         elif e.event_type in ["feed", "sleep"]:
             if e.action and e.action.lower() == "start":
                 counter[e.event_type] += 1
@@ -49,6 +45,7 @@ def get_today_logs():
         "date": now.strftime("%Y-%m-%d"),
         "logs": summary
     })
+
 
 @api.route("/api/logs/<date_str>", methods=["GET"])
 def get_logs_by_date(date_str):
@@ -60,8 +57,12 @@ def get_logs_by_date(date_str):
     start = day.replace(hour=0, minute=0, second=0)
     end = day.replace(hour=23, minute=59, second=59)
 
-    events = Event.query.filter(Event.timestamp >= start, Event.timestamp <= end).order_by(Event.timestamp.asc()).all()
-    results = []
+    events = Event.query.filter(
+        Event.timestamp >= start,
+        Event.timestamp <= end
+    ).order_by(Event.timestamp.asc()).all()
+
+    result = []
     for e in events:
         entry = {
             "timestamp": e.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
@@ -69,16 +70,12 @@ def get_logs_by_date(date_str):
             "action": e.action
         }
         if e.event_type == "feed":
-            detail = FeedDetail.query.filter_by(event_id=e.id).first()
-            if detail:
-                entry["volume_ml"] = detail.volume_ml
-        elif e.event_type == "boot":
-            detail = BootDetail.query.filter_by(event_id=e.id).first()
-            if detail:
-                entry["reason"] = detail.reason
-        results.append(entry)
+            feed_detail = FeedDetail.query.filter_by(event_id=e.id).first()
+            entry["volume"] = feed_detail.volume if feed_detail else 0
 
-    return jsonify({"date": date_str, "logs": results})
+        result.append(entry)
+
+    return jsonify({"date": date_str, "logs": result})
 
 
 @api.route("/api/logs", methods=["POST"])
@@ -86,7 +83,11 @@ def add_log():
     data = request.get_json()
     event_type = data.get("event")
     action = data.get("action")
-    volume = data.get("volume", 0)
+    volume = data.get("volume")
+    try:
+        volume = int(volume) if volume is not None else 0
+    except (ValueError, TypeError):
+        volume = 0
     reason = data.get("reason")
 
     now = datetime.now(CHINA_TZ).replace(microsecond=0)
@@ -105,7 +106,7 @@ def add_log():
     db.session.flush()
 
     if event_type == "feed":
-        db.session.add(FeedDetail(event_id=new_event.id, volume_ml=volume))
+        db.session.add(FeedDetail(event_id=new_event.id, volume=volume))
     elif event_type == "boot" and reason:
         db.session.add(BootDetail(event_id=new_event.id, reason=reason))
 
@@ -128,9 +129,12 @@ def export_logs_from_db(date):
     start = day.replace(hour=0, minute=0, second=0)
     end = day.replace(hour=23, minute=59, second=59)
 
-    events = Event.query.filter(Event.timestamp >= start, Event.timestamp <= end).order_by(Event.timestamp.asc()).all()
-    entries = []
+    events = Event.query.filter(
+        Event.timestamp >= start,
+        Event.timestamp <= end
+    ).order_by(Event.timestamp.asc()).all()
 
+    entries = []
     for e in events:
         entry = {
             "time": e.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
@@ -139,7 +143,7 @@ def export_logs_from_db(date):
         if e.event_type == "feed":
             detail = FeedDetail.query.filter_by(event_id=e.id).first()
             if detail:
-                entry["volume_ml"] = detail.volume_ml
+                entry["volume"] = detail.volume
         elif e.event_type == "boot":
             detail = BootDetail.query.filter_by(event_id=e.id).first()
             if detail:
@@ -167,7 +171,10 @@ def esp_status():
 @api.route("/api/stats/summary/today", methods=["GET"])
 def get_today_summary():
     start, end = get_today_range()
-    events = Event.query.filter(Event.timestamp >= start, Event.timestamp <= end).all()
+    events = Event.query.filter(
+        Event.timestamp >= start,
+        Event.timestamp <= end
+    ).all()
 
     total_volume = 0
     diaper_count = 0
@@ -178,7 +185,7 @@ def get_today_summary():
         elif e.event_type == "feed":
             detail = FeedDetail.query.filter_by(event_id=e.id).first()
             if detail:
-                total_volume += detail.volume_ml
+                total_volume += detail.volume
 
     return jsonify({
         "date": start.strftime("%Y-%m-%d"),
@@ -192,19 +199,24 @@ def get_daily_overview():
     today = datetime.now(CHINA_TZ).replace(hour=0, minute=0, second=0, microsecond=0)
     result = []
 
-    for i in range(7):  # Last 7 days
+    for i in range(7):
         day = today - timedelta(days=i)
         start = day
         end = day.replace(hour=23, minute=59, second=59)
-        events = Event.query.filter(Event.timestamp >= start, Event.timestamp <= end).all()
+
+        events = Event.query.filter(
+            Event.timestamp >= start,
+            Event.timestamp <= end
+        ).all()
 
         diapers = sum(1 for e in events if e.event_type in ["pee", "poo", "pee+poo"])
         total_feed = 0
+
         for e in events:
             if e.event_type == "feed":
                 d = FeedDetail.query.filter_by(event_id=e.id).first()
                 if d:
-                    total_feed += d.volume_ml
+                    total_feed += d.volume
 
         result.append({
             "date": day.strftime("%Y-%m-%d"),

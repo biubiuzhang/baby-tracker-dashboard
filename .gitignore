@@ -27,7 +27,6 @@ Thumbs.db
 # Logs synced from ESP32
 baby-logs/
 logs/
-*.txt
 
 # React frontend
 frontend/node_modules/

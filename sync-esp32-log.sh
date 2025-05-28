@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ESP32_IP="esp32.local"
+ESP32_IP="192.168.50.144"
 DEST_DIR="/home/pi/baby-logs"
 
 mkdir -p "$DEST_DIR"

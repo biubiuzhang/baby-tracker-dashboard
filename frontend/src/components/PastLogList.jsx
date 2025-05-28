@@ -29,7 +29,7 @@ export default function PastLogList({ logs }) {
           if (action === 'start') {
             label = 'Feed Start';
           } else if (action === 'stop') {
-            label = `Feed Stop (${entry.volume_ml || 0}ml)`;
+            label = `Feed Stop (${entry.volume || 0}ml)`;
           } else {
             label = 'Feed';
           }

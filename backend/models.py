@@ -34,7 +34,7 @@ class Event(db.Model):
 class FeedDetail(db.Model):
     __tablename__ = 'feed_details'
     event_id = db.Column(UUID(as_uuid=True), db.ForeignKey('events.id'), primary_key=True)
-    volume_ml = db.Column(db.Integer, nullable=False, default=0)
+    volume = db.Column(db.Integer, nullable=False, default=0)
 
 class BootDetail(db.Model):
     __tablename__ = 'boot_details'

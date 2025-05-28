@@ -1,0 +1,10 @@
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+Flask-Migrate
+psycopg2-binary
+requests
+pytz
+paho-mqtt
+gunicorn
+python-dotenv
